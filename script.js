@@ -406,14 +406,18 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
         if (loadedCount === 3) {
           // All images loaded, draw them on the canvas
           
+          // Calculate scale factor (canvas is 2x the natural size due to scale:2 in html2canvas)
+          const scale = 2;
+          
           // Get BTC logo position (approximate based on your layout)
           const btcLogoElement = document.querySelector('.btc-logo');
           if (btcLogoElement) {
             const btcRect = btcLogoElement.getBoundingClientRect();
             const posterRect = posterContainer.getBoundingClientRect();
-            const btcX = (btcRect.left - posterRect.left) * (canvas.width / posterRect.width);
-            const btcY = (btcRect.top - posterRect.top) * (canvas.height / posterRect.height);
-            ctx.drawImage(btcImage, btcX, btcY, 90 * (canvas.width / posterRect.width), 90 * (canvas.height / posterRect.height));
+            const btcX = (btcRect.left - posterRect.left) * scale;
+            const btcY = (btcRect.top - posterRect.top) * scale;
+            // Draw BTC logo at 3x the size (adjust as needed)
+            ctx.drawImage(btcImage, btcX, btcY, 90 * scale, 90 * scale);
           }
           
           // Get ETH icon position
@@ -421,9 +425,10 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
           if (ethIconElement) {
             const ethRect = ethIconElement.getBoundingClientRect();
             const posterRect = posterContainer.getBoundingClientRect();
-            const ethX = (ethRect.left - posterRect.left) * (canvas.width / posterRect.width);
-            const ethY = (ethRect.top - posterRect.top) * (canvas.height / posterRect.height);
-            ctx.drawImage(ethImage, ethX, ethY, 36 * (canvas.width / posterRect.width), 36 * (canvas.height / posterRect.height));
+            const ethX = (ethRect.left - posterRect.left) * scale;
+            const ethY = (ethRect.top - posterRect.top) * scale;
+            // Draw ETH icon at 3x the size
+            ctx.drawImage(ethImage, ethX, ethY, 36 * scale, 36 * scale);
           }
           
           // Get SOL icon position
@@ -431,9 +436,10 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
           if (solIconElement) {
             const solRect = solIconElement.getBoundingClientRect();
             const posterRect = posterContainer.getBoundingClientRect();
-            const solX = (solRect.left - posterRect.left) * (canvas.width / posterRect.width);
-            const solY = (solRect.top - posterRect.top) * (canvas.height / posterRect.height);
-            ctx.drawImage(solImage, solX, solY, 36 * (canvas.width / posterRect.width), 36 * (canvas.height / posterRect.height));
+            const solX = (solRect.left - posterRect.left) * scale;
+            const solY = (solRect.top - posterRect.top) * scale;
+            // Draw SOL icon at 3x the size
+            ctx.drawImage(solImage, solX, solY, 36 * scale, 36 * scale);
           }
           
           // Now download the image with the logos added
