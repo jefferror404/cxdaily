@@ -381,67 +381,7 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
   // Show loading message
   alert("Preparing image for download...");
   
-  // Get references to elements
-  const btcLogo = document.querySelector('.btc-logo');
-  const ethIcon = document.querySelector('.token-icon.eth');
-  const solIcon = document.querySelector('.token-icon.sol');
-  
-  // Store original state
-  const originalHTML = {
-    btcLogo: btcLogo ? btcLogo.innerHTML : '',
-    ethIcon: ethIcon ? ethIcon.innerHTML : '',
-    solIcon: solIcon ? solIcon.innerHTML : ''
-  };
-  
-  const originalStyle = {
-    btcLogo: btcLogo ? btcLogo.getAttribute('style') || '' : '',
-    ethIcon: ethIcon ? ethIcon.getAttribute('style') || '' : '',
-    solIcon: solIcon ? solIcon.getAttribute('style') || '' : ''
-  };
-  
-  // Define PNG image paths - using your local paths
-  const btcImageUrl = 'images/bitcoin-btc-logo.png';
-  const ethImageUrl = 'images/ethereum-eth-logo.png';
-  const solImageUrl = 'images/solana-sol-logo.png';
-  
-  // Replace with PNG images
-  if (btcLogo) {
-    btcLogo.innerHTML = '';
-    btcLogo.style.background = 'none';
-    btcLogo.style.display = 'flex';
-    btcLogo.style.justifyContent = 'center';
-    btcLogo.style.alignItems = 'center';
-    const img = document.createElement('img');
-    img.src = btcImageUrl;
-    img.width = 90;
-    img.height = 90;
-    img.alt = 'Bitcoin';
-    btcLogo.appendChild(img);
-  }
-  
-  if (ethIcon) {
-    ethIcon.innerHTML = '';
-    ethIcon.style.backgroundImage = 'none';
-    const img = document.createElement('img');
-    img.src = ethImageUrl;
-    img.width = 36;
-    img.height = 36;
-    img.alt = 'Ethereum';
-    ethIcon.appendChild(img);
-  }
-  
-  if (solIcon) {
-    solIcon.innerHTML = '';
-    solIcon.style.backgroundImage = 'none';
-    const img = document.createElement('img');
-    img.src = solImageUrl;
-    img.width = 36;
-    img.height = 36;
-    img.alt = 'Solana';
-    solIcon.appendChild(img);
-  }
-  
-  // Give time for images to load
+  // First, capture the poster without worrying about the logos
   setTimeout(function() {
     html2canvas(posterContainer, {
       scale: 2,
@@ -449,69 +389,112 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
       allowTaint: true,
       backgroundColor: '#000000'
     }).then(function(canvas) {
-      // Try to download the image
-      try {
-        canvas.toBlob(function(blob) {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = 'coinex-daily-poster.png';
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Clean up URL
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-          } else {
-            throw new Error("Failed to create blob");
+      // Get canvas context for drawing
+      const ctx = canvas.getContext('2d');
+      
+      // Create Image objects for the logos
+      const btcImage = new Image();
+      const ethImage = new Image();
+      const solImage = new Image();
+      
+      // Track loaded images
+      let loadedCount = 0;
+      
+      // Function to check if all images are loaded
+      function checkAllLoaded() {
+        loadedCount++;
+        if (loadedCount === 3) {
+          // All images loaded, draw them on the canvas
+          
+          // Get BTC logo position (approximate based on your layout)
+          const btcLogoElement = document.querySelector('.btc-logo');
+          if (btcLogoElement) {
+            const btcRect = btcLogoElement.getBoundingClientRect();
+            const posterRect = posterContainer.getBoundingClientRect();
+            const btcX = (btcRect.left - posterRect.left) * (canvas.width / posterRect.width);
+            const btcY = (btcRect.top - posterRect.top) * (canvas.height / posterRect.height);
+            ctx.drawImage(btcImage, btcX, btcY, 90 * (canvas.width / posterRect.width), 90 * (canvas.height / posterRect.height));
           }
-        }, 'image/png');
-      } catch (error) {
-        console.error("Error creating download:", error);
-        alert("Could not create download. Please try taking a screenshot instead.");
+          
+          // Get ETH icon position
+          const ethIconElement = document.querySelector('.token-icon.eth');
+          if (ethIconElement) {
+            const ethRect = ethIconElement.getBoundingClientRect();
+            const posterRect = posterContainer.getBoundingClientRect();
+            const ethX = (ethRect.left - posterRect.left) * (canvas.width / posterRect.width);
+            const ethY = (ethRect.top - posterRect.top) * (canvas.height / posterRect.height);
+            ctx.drawImage(ethImage, ethX, ethY, 36 * (canvas.width / posterRect.width), 36 * (canvas.height / posterRect.height));
+          }
+          
+          // Get SOL icon position
+          const solIconElement = document.querySelector('.token-icon.sol');
+          if (solIconElement) {
+            const solRect = solIconElement.getBoundingClientRect();
+            const posterRect = posterContainer.getBoundingClientRect();
+            const solX = (solRect.left - posterRect.left) * (canvas.width / posterRect.width);
+            const solY = (solRect.top - posterRect.top) * (canvas.height / posterRect.height);
+            ctx.drawImage(solImage, solX, solY, 36 * (canvas.width / posterRect.width), 36 * (canvas.height / posterRect.height));
+          }
+          
+          // Now download the image with the logos added
+          try {
+            canvas.toBlob(function(blob) {
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = 'coinex-daily-poster.png';
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up URL
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+              } else {
+                throw new Error("Failed to create blob");
+              }
+            }, 'image/png');
+          } catch (error) {
+            console.error("Error creating download:", error);
+            alert("Could not create download. Please try taking a screenshot instead.");
+          }
+          
+          // Restore UI
+          toggleButton.style.display = 'block';
+          if (controlsWasOpen) {
+            controlsPanel.classList.add('open');
+          }
+        }
       }
       
-      // Restore original state
-      if (btcLogo) {
-        btcLogo.innerHTML = originalHTML.btcLogo;
-        btcLogo.setAttribute('style', originalStyle.btcLogo);
-      }
+      // Set up image loading handlers
+      btcImage.onload = checkAllLoaded;
+      ethImage.onload = checkAllLoaded;
+      solImage.onload = checkAllLoaded;
       
-      if (ethIcon) {
-        ethIcon.innerHTML = originalHTML.ethIcon;
-        ethIcon.setAttribute('style', originalStyle.ethIcon);
-      }
+      // Set image sources - adjust paths as needed
+      btcImage.src = 'images/bitcoin-btc-logo.png';
+      ethImage.src = 'images/ethereum-eth-logo.png';
+      solImage.src = 'images/solana-sol-logo.png';
       
-      if (solIcon) {
-        solIcon.innerHTML = originalHTML.solIcon;
-        solIcon.setAttribute('style', originalStyle.solIcon);
-      }
+      // Handle image loading errors
+      btcImage.onerror = function() {
+        console.error("Error loading Bitcoin image");
+        checkAllLoaded(); // Still count as loaded to avoid hanging
+      };
       
-      // Restore UI
-      toggleButton.style.display = 'block';
-      if (controlsWasOpen) {
-        controlsPanel.classList.add('open');
-      }
+      ethImage.onerror = function() {
+        console.error("Error loading Ethereum image");
+        checkAllLoaded();
+      };
+      
+      solImage.onerror = function() {
+        console.error("Error loading Solana image");
+        checkAllLoaded();
+      };
     }).catch(function(error) {
       console.error("Error capturing image:", error);
       alert("Could not capture image. Please try taking a screenshot instead.");
-      
-      // Restore original state
-      if (btcLogo) {
-        btcLogo.innerHTML = originalHTML.btcLogo;
-        btcLogo.setAttribute('style', originalStyle.btcLogo);
-      }
-      
-      if (ethIcon) {
-        ethIcon.innerHTML = originalHTML.ethIcon;
-        ethIcon.setAttribute('style', originalStyle.ethIcon);
-      }
-      
-      if (solIcon) {
-        solIcon.innerHTML = originalHTML.solIcon;
-        solIcon.setAttribute('style', originalStyle.solIcon);
-      }
       
       // Restore UI
       toggleButton.style.display = 'block';
@@ -519,5 +502,5 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
         controlsPanel.classList.add('open');
       }
     });
-  }, 1000); // Give a full second for images to load
+  }, 500);
 });
