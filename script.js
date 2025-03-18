@@ -363,9 +363,6 @@ document.getElementById('updateManualData').addEventListener('click', function (
 });
 
 
-// Replace your current download button code with this simplified version
-// This is optimized for hosted environments like GitHub Pages
-
 document.getElementById('downloadPoster').addEventListener('click', async function() {
   console.log("Download button clicked");
   
@@ -382,117 +379,113 @@ document.getElementById('downloadPoster').addEventListener('click', async functi
   controlsPanel.classList.remove('open');
   
   // Show loading message
-  alert("Preparing image for download. This may take a few seconds...");
+  alert("Preparing image for download...");
+  
+  // Get references to elements that need replacement
+  const btcLogo = document.querySelector('.btc-logo');
+  const ethIcon = document.querySelector('.token-icon.eth');
+  const solIcon = document.querySelector('.token-icon.sol');
+  
+  // Store original content for restoration
+  const originalContent = {
+    btcLogo: btcLogo ? btcLogo.innerHTML : '',
+    btcLogoStyle: btcLogo ? btcLogo.getAttribute('style') : '',
+    ethIcon: ethIcon ? ethIcon.innerHTML : '',
+    ethIconStyle: ethIcon ? ethIcon.getAttribute('style') : '',
+    solIcon: solIcon ? solIcon.innerHTML : '',
+    solIconStyle: solIcon ? solIcon.getAttribute('style') : ''
+  };
+  
+  // Get SVG elements
+  const btcSvg = document.getElementById('btc-svg');
+  const ethSvg = document.getElementById('eth-svg');
+  const solSvg = document.getElementById('sol-svg');
   
   try {
-    // Load crypto icons
-    const [btcImage, ethImage, solImage] = await prepareDownload();
-    
-    // Get references to elements
-    const btcLogo = document.querySelector('.btc-logo');
-    const ethIcon = document.querySelector('.token-icon.eth');
-    const solIcon = document.querySelector('.token-icon.sol');
-    
-    // Store original state
-    const originalHTML = {
-      btcLogo: btcLogo ? btcLogo.innerHTML : '',
-      ethIcon: ethIcon ? ethIcon.innerHTML : '',
-      solIcon: solIcon ? solIcon.innerHTML : '',
-    };
-    
-    const originalStyle = {
-      btcLogo: btcLogo ? btcLogo.getAttribute('style') || '' : '',
-      ethIcon: ethIcon ? ethIcon.getAttribute('style') || '' : '',
-      solIcon: solIcon ? solIcon.getAttribute('style') || '' : '',
-    };
-    
-    // Temporarily replace with actual images for capture
-    if (btcLogo) {
+    // Insert the SVGs into the places where icons should be
+    if (btcLogo && btcSvg) {
       btcLogo.innerHTML = '';
       btcLogo.style.background = 'none';
-      btcLogo.style.display = 'flex';
-      btcLogo.style.justifyContent = 'center';
-      btcLogo.style.alignItems = 'center';
-      
-      const btcImgElement = document.createElement('img');
-      btcImgElement.src = btcImage.src;
-      btcImgElement.style.width = '90px';
-      btcImgElement.style.height = '90px';
-      btcLogo.appendChild(btcImgElement);
+      btcLogo.appendChild(btcSvg.cloneNode(true));
     }
     
-    if (ethIcon) {
+    if (ethIcon && ethSvg) {
       ethIcon.innerHTML = '';
       ethIcon.style.backgroundImage = 'none';
-      
-      const ethImgElement = document.createElement('img');
-      ethImgElement.src = ethImage.src;
-      ethImgElement.style.width = '36px';
-      ethImgElement.style.height = '36px';
-      ethIcon.appendChild(ethImgElement);
+      ethIcon.appendChild(ethSvg.cloneNode(true));
     }
     
-    if (solIcon) {
+    if (solIcon && solSvg) {
       solIcon.innerHTML = '';
       solIcon.style.backgroundImage = 'none';
-      
-      const solImgElement = document.createElement('img');
-      solImgElement.src = solImage.src;
-      solImgElement.style.width = '36px';
-      solImgElement.style.height = '36px';
-      solIcon.appendChild(solImgElement);
+      solIcon.appendChild(solSvg.cloneNode(true));
     }
     
-    // Wait a moment for UI to update
-    setTimeout(async function() {
-      try {
-        // Capture with html2canvas
-        const canvas = await html2canvas(posterContainer, { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          backgroundColor: '#000000'
-        });
-        
-        console.log("Canvas generated, attempting download");
-        
-        // Create download link
+    // Wait a moment for DOM updates
+    setTimeout(function() {
+      // Use html2canvas with minimal settings
+      html2canvas(posterContainer, { 
+        scale: 2,
+        logging: false,
+        backgroundColor: '#000000', // Match your background color
+        useCORS: true,
+        allowTaint: true,
+        onclone: function(clonedDoc) {
+          // Additional modifications to the cloned document if needed
+        }
+      }).then(function(canvas) {
         try {
+          // Try blob method first (more reliable)
           canvas.toBlob(function(blob) {
-            const url = URL.createObjectURL(blob);
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.download = 'coinex-daily-poster.png';
+              link.href = url;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              
+              // Clean up
+              setTimeout(() => URL.revokeObjectURL(url), 100);
+            } else {
+              throw new Error("Blob creation failed");
+            }
+          }, 'image/png');
+        } catch (error) {
+          console.error("Blob method failed:", error);
+          
+          // Fall back to dataURL method
+          try {
             const link = document.createElement('a');
             link.download = 'coinex-daily-poster.png';
-            link.href = url;
+            link.href = canvas.toDataURL('image/png');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // Clean up
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-          }, 'image/png');
-        } catch (error) {
-          console.error("Error creating download:", error);
-          alert("Could not generate download. Please try taking a screenshot instead.");
+          } catch (dataUrlError) {
+            console.error("DataURL method failed:", dataUrlError);
+            alert("Could not generate image. Please try taking a screenshot instead.");
+          }
         }
-      } catch (error) {
-        console.error("Error capturing image:", error);
-        alert("Could not capture the poster. Please try taking a screenshot instead.");
-      } finally {
-        // Restore original state
+      }).catch(function(error) {
+        console.error("HTML2Canvas error:", error);
+        alert("Could not generate image. Please try taking a screenshot instead.");
+      }).finally(function() {
+        // Restore original content
         if (btcLogo) {
-          btcLogo.innerHTML = originalHTML.btcLogo;
-          btcLogo.setAttribute('style', originalStyle.btcLogo);
+          btcLogo.innerHTML = originalContent.btcLogo;
+          btcLogo.setAttribute('style', originalContent.btcLogoStyle || '');
         }
         
         if (ethIcon) {
-          ethIcon.innerHTML = originalHTML.ethIcon;
-          ethIcon.setAttribute('style', originalStyle.ethIcon);
+          ethIcon.innerHTML = originalContent.ethIcon;
+          ethIcon.setAttribute('style', originalContent.ethIconStyle || '');
         }
         
         if (solIcon) {
-          solIcon.innerHTML = originalHTML.solIcon;
-          solIcon.setAttribute('style', originalStyle.solIcon);
+          solIcon.innerHTML = originalContent.solIcon;
+          solIcon.setAttribute('style', originalContent.solIconStyle || '');
         }
         
         // Restore UI
@@ -500,16 +493,33 @@ document.getElementById('downloadPoster').addEventListener('click', async functi
         if (controlsWasOpen) {
           controlsPanel.classList.add('open');
         }
-      }
-    }, 500);
+      });
+    }, 300);
   } catch (error) {
-    console.error("Error preparing download:", error);
-    alert("An error occurred preparing the download. Please try again or take a screenshot instead.");
+    console.error("Error during preparation:", error);
+    
+    // Restore original content
+    if (btcLogo) {
+      btcLogo.innerHTML = originalContent.btcLogo;
+      btcLogo.setAttribute('style', originalContent.btcLogoStyle || '');
+    }
+    
+    if (ethIcon) {
+      ethIcon.innerHTML = originalContent.ethIcon;
+      ethIcon.setAttribute('style', originalContent.ethIconStyle || '');
+    }
+    
+    if (solIcon) {
+      solIcon.innerHTML = originalContent.solIcon;
+      solIcon.setAttribute('style', originalContent.solIconStyle || '');
+    }
     
     // Restore UI
     toggleButton.style.display = 'block';
     if (controlsWasOpen) {
       controlsPanel.classList.add('open');
     }
+    
+    alert("An error occurred. Please try taking a screenshot instead.");
   }
 });
