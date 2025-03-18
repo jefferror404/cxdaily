@@ -1,3 +1,54 @@
+// Add this to your script.js file
+// This will convert your background image SVGs to inline images
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Convert the Bitcoin logo to an img element
+  const btcLogo = document.querySelector('.btc-logo');
+  if (btcLogo) {
+    // Create an img element to replace the background image
+    const btcImg = document.createElement('img');
+    btcImg.src = 'images/bitcoin-btc-logo.svg'; // Use your actual image path
+    btcImg.style.width = '90px';
+    btcImg.style.height = '90px';
+    btcImg.style.marginRight = '10px';
+    btcImg.alt = 'Bitcoin';
+    
+    // Replace the div with the img
+    btcLogo.innerHTML = '';
+    btcLogo.appendChild(btcImg);
+    btcLogo.style.background = 'none';
+  }
+  
+  // Convert ETH and SOL icons to img elements
+  const ethIcon = document.querySelector('.token-icon.eth');
+  if (ethIcon) {
+    const ethImg = document.createElement('img');
+    ethImg.src = 'images/ethereum-eth-logo.svg'; // Use your actual image path
+    ethImg.style.width = '36px';
+    ethImg.style.height = '36px';
+    ethImg.alt = 'Ethereum';
+    
+    ethIcon.innerHTML = '';
+    ethIcon.appendChild(ethImg);
+    ethIcon.style.backgroundImage = 'none';
+  }
+  
+  const solIcon = document.querySelector('.token-icon.sol');
+  if (solIcon) {
+    const solImg = document.createElement('img');
+    solImg.src = 'images/solana-sol-logo.svg'; // Use your actual image path
+    solImg.style.width = '36px';
+    solImg.style.height = '36px';
+    solImg.alt = 'Solana';
+    
+    solIcon.innerHTML = '';
+    solIcon.appendChild(solImg);
+    solIcon.style.backgroundImage = 'none';
+  }
+});
+
+
+
 // Toggle controls panel
 document.getElementById('toggleControls').addEventListener('click', function () {
     document.getElementById('controls').classList.toggle('open');
