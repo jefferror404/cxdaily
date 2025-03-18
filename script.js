@@ -404,42 +404,30 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
       function checkAllLoaded() {
         loadedCount++;
         if (loadedCount === 3) {
-          // All images loaded, draw them on the canvas
-          
-          // Calculate scale factor (canvas is 2x the natural size due to scale:2 in html2canvas)
-          const scale = 2;
-          
-          // Get BTC logo position (approximate based on your layout)
+          // Get positions on the poster
           const btcLogoElement = document.querySelector('.btc-logo');
-          if (btcLogoElement) {
-            const btcRect = btcLogoElement.getBoundingClientRect();
-            const posterRect = posterContainer.getBoundingClientRect();
-            const btcX = (btcRect.left - posterRect.left) * scale;
-            const btcY = (btcRect.top - posterRect.top) * scale;
-            // Draw BTC logo at 3x the size (adjust as needed)
-            ctx.drawImage(btcImage, btcX, btcY, 90 * scale, 90 * scale);
-          }
-          
-          // Get ETH icon position
           const ethIconElement = document.querySelector('.token-icon.eth');
-          if (ethIconElement) {
-            const ethRect = ethIconElement.getBoundingClientRect();
-            const posterRect = posterContainer.getBoundingClientRect();
-            const ethX = (ethRect.left - posterRect.left) * scale;
-            const ethY = (ethRect.top - posterRect.top) * scale;
-            // Draw ETH icon at 3x the size
-            ctx.drawImage(ethImage, ethX, ethY, 36 * scale, 36 * scale);
+          const solIconElement = document.querySelector('.token-icon.sol');
+          const posterRect = posterContainer.getBoundingClientRect();
+          
+          // Use fixed positions for the icons instead of calculating
+          
+          // Draw BTC logo (much larger)
+          if (btcLogoElement) {
+            // Target the upper left section - these are manual coordinates
+            ctx.drawImage(btcImage, 160, 225, 180, 180); // Make BTC logo much larger
           }
           
-          // Get SOL icon position
-          const solIconElement = document.querySelector('.token-icon.sol');
+          // Draw ETH icon (much larger)
+          if (ethIconElement) {
+            // Target the ETH card in lower left
+            ctx.drawImage(ethImage, 175, 623, 72, 72); // Make ETH icon much larger
+          }
+          
+          // Draw SOL icon (much larger)
           if (solIconElement) {
-            const solRect = solIconElement.getBoundingClientRect();
-            const posterRect = posterContainer.getBoundingClientRect();
-            const solX = (solRect.left - posterRect.left) * scale;
-            const solY = (solRect.top - posterRect.top) * scale;
-            // Draw SOL icon at 3x the size
-            ctx.drawImage(solImage, solX, solY, 36 * scale, 36 * scale);
+            // Target the SOL card in lower left
+            ctx.drawImage(solImage, 424, 623, 72, 72); // Make SOL icon much larger
           }
           
           // Now download the image with the logos added
