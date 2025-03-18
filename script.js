@@ -369,132 +369,77 @@ document.getElementById('downloadPoster').addEventListener('click', function() {
   // Reference the poster container
   const posterContainer = document.querySelector('.poster-container');
   
-  // Hide controls for clean capture
+  // Hide controls
   const toggleButton = document.getElementById('toggleControls');
   const controlsPanel = document.getElementById('controls');
-  const controlsWasOpen = controlsPanel.classList.contains('open');
-  
-  // Hide UI elements
   toggleButton.style.display = 'none';
   controlsPanel.classList.remove('open');
   
-  // Show loading message
-  alert("Preparing image for download...");
-  
-  // First, capture the poster without worrying about the logos
-  setTimeout(function() {
-    html2canvas(posterContainer, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#000000'
-    }).then(function(canvas) {
-      // Get canvas context for drawing
-      const ctx = canvas.getContext('2d');
+  // Capture the poster
+  html2canvas(posterContainer, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#000000'
+  }).then(function(canvas) {
+    // Create a new canvas that we'll draw onto
+    const finalCanvas = document.createElement('canvas');
+    const ctx = finalCanvas.getContext('2d');
+    
+    // Make it the same size as the original canvas
+    finalCanvas.width = canvas.width;
+    finalCanvas.height = canvas.height;
+    
+    // Draw the original canvas onto our new canvas
+    ctx.drawImage(canvas, 0, 0);
+    
+    // Create a Bitcoin logo image
+    const btcImage = new Image();
+    btcImage.onload = function() {
+      // Draw the Bitcoin logo VERY large in the Bitcoin section
+      ctx.drawImage(btcImage, 100, 200, 200, 200);
       
-      // Create Image objects for the logos
-      const btcImage = new Image();
-      const ethImage = new Image();
-      const solImage = new Image();
-      
-      // Track loaded images
-      let loadedCount = 0;
-      
-      // Function to check if all images are loaded
-      function checkAllLoaded() {
-        loadedCount++;
-        if (loadedCount === 3) {
-          // Get positions on the poster
-          const btcLogoElement = document.querySelector('.btc-logo');
-          const ethIconElement = document.querySelector('.token-icon.eth');
-          const solIconElement = document.querySelector('.token-icon.sol');
-          const posterRect = posterContainer.getBoundingClientRect();
-          
-          // Use fixed positions for the icons instead of calculating
-          
-          // Draw BTC logo (much larger)
-          if (btcLogoElement) {
-            // Target the upper left section - these are manual coordinates
-            ctx.drawImage(btcImage, 160, 225, 180, 180); // Make BTC logo much larger
-          }
-          
-          // Draw ETH icon (much larger)
-          if (ethIconElement) {
-            // Target the ETH card in lower left
-            ctx.drawImage(ethImage, 175, 623, 72, 72); // Make ETH icon much larger
-          }
-          
-          // Draw SOL icon (much larger)
-          if (solIconElement) {
-            // Target the SOL card in lower left
-            ctx.drawImage(solImage, 424, 623, 72, 72); // Make SOL icon much larger
-          }
-          
-          // Now download the image with the logos added
-          try {
-            canvas.toBlob(function(blob) {
-              if (blob) {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = 'coinex-daily-poster.png';
-                link.href = url;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Clean up URL
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-              } else {
-                throw new Error("Failed to create blob");
-              }
-            }, 'image/png');
-          } catch (error) {
-            console.error("Error creating download:", error);
-            alert("Could not create download. Please try taking a screenshot instead.");
-          }
-          
-          // Restore UI
-          toggleButton.style.display = 'block';
-          if (controlsWasOpen) {
-            controlsPanel.classList.add('open');
-          }
-        }
-      }
-      
-      // Set up image loading handlers
-      btcImage.onload = checkAllLoaded;
-      ethImage.onload = checkAllLoaded;
-      solImage.onload = checkAllLoaded;
-      
-      // Set image sources - adjust paths as needed
-      btcImage.src = 'images/bitcoin-btc-logo.png';
-      ethImage.src = 'images/ethereum-eth-logo.png';
-      solImage.src = 'images/solana-sol-logo.png';
-      
-      // Handle image loading errors
-      btcImage.onerror = function() {
-        console.error("Error loading Bitcoin image");
-        checkAllLoaded(); // Still count as loaded to avoid hanging
-      };
-      
-      ethImage.onerror = function() {
-        console.error("Error loading Ethereum image");
-        checkAllLoaded();
-      };
-      
-      solImage.onerror = function() {
-        console.error("Error loading Solana image");
-        checkAllLoaded();
-      };
-    }).catch(function(error) {
-      console.error("Error capturing image:", error);
-      alert("Could not capture image. Please try taking a screenshot instead.");
-      
-      // Restore UI
-      toggleButton.style.display = 'block';
-      if (controlsWasOpen) {
-        controlsPanel.classList.add('open');
-      }
-    });
-  }, 500);
+      // Now download the image
+      finalCanvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'coinex-daily-poster.png';
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        // Restore UI
+        toggleButton.style.display = 'block';
+      });
+    };
+    
+    // Handle error
+    btcImage.onerror = function() {
+      console.error("Failed to load Bitcoin image");
+      // Try to download anyway
+      finalCanvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'coinex-daily-poster.png';
+        link.href = url;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        // Restore UI
+        toggleButton.style.display = 'block';
+      });
+    };
+    
+    // Set source with timestamp to avoid caching issues
+    btcImage.src = 'images/bitcoin-btc-logo.png?' + new Date().getTime();
+    
+  }).catch(function(error) {
+    console.error("Error:", error);
+    alert("Could not generate image. Please try taking a screenshot instead.");
+    
+    // Restore UI
+    toggleButton.style.display = 'block';
+  });
 });
