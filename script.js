@@ -103,7 +103,7 @@ async function fetchCoinExData(retryCount = 0, delayMs = 1000) {
     console.log("Fetching CoinEx market data...");
     
     // Use a CORS proxy to handle the request
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    const corsProxy = 'https://api.allorigins.win/raw?url=';
     const apiUrl = "https://www.coinex.com/res/system/trade/info";
     
     const response = await fetch(corsProxy + encodeURIComponent(apiUrl), {
