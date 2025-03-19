@@ -97,70 +97,75 @@ function updateFearGreedNeedle(value) {
 }
 
 // Function to fetch CoinEx market data
+// Function to fetch CoinEx market data
 async function fetchCoinExData(retryCount = 0, delayMs = 1000) {
-    try {
-      console.log("Fetching CoinEx market data...");
-      
-      // Direct API call - this should work on GitHub Pages deployment
-      const apiUrl = "https://www.coinex.com/res/system/trade/info";
-      
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+  try {
+    console.log("Fetching CoinEx market data...");
+    
+    // Use a CORS proxy to handle the request
+    const corsProxy = 'https://corsproxy.io/?';
+    const apiUrl = "https://www.coinex.com/res/system/trade/info";
+    
+    const response = await fetch(corsProxy + encodeURIComponent(apiUrl), {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
       }
-      
-      const data = await response.json();
-      console.log("CoinEx data received:", data);
-      
-      if (data.code === 0 && data.data) {
-        // Extract the data we need
-        const totalAssetCount = data.data.total_asset_count;
-        const priceUpNums = data.data.price_up_nums;
-        const priceDownNums = data.data.price_down_nums;
-        
-        // Update the UI elements
-        document.getElementById('listedCoins').textContent = totalAssetCount.toLocaleString();
-        document.getElementById('coinsUp').textContent = priceUpNums.toLocaleString();
-        document.getElementById('coinsDown').textContent = priceDownNums.toLocaleString();
-        
-        // Update the form inputs too
-        document.getElementById('listedCoinsInput').value = totalAssetCount;
-        document.getElementById('coinsUpInput').value = priceUpNums;
-        document.getElementById('coinsDownInput').value = priceDownNums;
-        
-        // Update the Up and Down Bars
-        const totalCoins = priceUpNums + priceDownNums;
-        const upPercentage = (priceUpNums / totalCoins) * 100;
-        const downPercentage = (priceDownNums / totalCoins) * 100;
-        document.getElementById('upBar').style.width = `${upPercentage}%`;
-        document.getElementById('downBar').style.width = `${downPercentage}%`;
-        
-        console.log(`Updated CoinEx data successfully: ${totalAssetCount} listed, ${priceUpNums} up, ${priceDownNums} down`);
-        return true; // Success
-      } else {
-        console.error("Invalid response format from CoinEx API:", data);
-        return false;
-      }
-    } catch (error) {
-      console.error(`Error fetching CoinEx data (attempt ${retryCount + 1}):`, error);
-      
-      // Retry with exponential backoff, up to 3 attempts
-      if (retryCount < 3) {
-        const nextDelayMs = delayMs * 2; // Exponential backoff
-        console.log(`Retrying in ${nextDelayMs}ms...`);
-        await sleep(nextDelayMs);
-        return fetchCoinExData(retryCount + 1, nextDelayMs);
-      }
-      
-      return false; // Failed after retries
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+    
+    const data = await response.json();
+    console.log("CoinEx data received:", data);
+    
+    if (data.code === 0 && data.data) {
+      // Extract the data we need
+      const totalAssetCount = data.data.total_asset_count;
+      const priceUpNums = data.data.price_up_nums;
+      const priceDownNums = data.data.price_down_nums;
+      
+      // Update the UI elements
+      document.getElementById('listedCoins').textContent = totalAssetCount.toLocaleString();
+      document.getElementById('coinsUp').textContent = priceUpNums.toLocaleString();
+      document.getElementById('coinsDown').textContent = priceDownNums.toLocaleString();
+      
+      // Update the form inputs too
+      document.getElementById('listedCoinsInput').value = totalAssetCount;
+      document.getElementById('coinsUpInput').value = priceUpNums;
+      document.getElementById('coinsDownInput').value = priceDownNums;
+      
+      // Update the Up and Down Bars
+      const totalCoins = priceUpNums + priceDownNums;
+      const upPercentage = (priceUpNums / totalCoins) * 100;
+      const downPercentage = (priceDownNums / totalCoins) * 100;
+      document.getElementById('upBar').style.width = `${upPercentage}%`;
+      document.getElementById('downBar').style.width = `${downPercentage}%`;
+      
+      console.log(`Updated CoinEx data successfully: ${totalAssetCount} listed, ${priceUpNums} up, ${priceDownNums} down`);
+      alert('CoinEx stats updated successfully!');
+      return true; // Success
+    } else {
+      console.error("Invalid response format from CoinEx API:", data);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error fetching CoinEx data (attempt ${retryCount + 1}):`, error);
+    
+    // Retry with exponential backoff, up to 3 attempts
+    if (retryCount < 3) {
+      const nextDelayMs = delayMs * 2; // Exponential backoff
+      console.log(`Retrying in ${nextDelayMs}ms...`);
+      await sleep(nextDelayMs);
+      return fetchCoinExData(retryCount + 1, nextDelayMs);
+    }
+    
+    // If all attempts fail, let the user know
+    alert('Failed to update CoinEx stats. Please try again later.');
+    return false; // Failed after retries
   }
+}
   
   // Create a separate button for CoinEx data refresh
   document.addEventListener('DOMContentLoaded', function() {
