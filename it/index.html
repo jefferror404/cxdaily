@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoinEx Daily</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="poster-container">
+    <div class="header">
+        <h1 class="title">CoinEx Daily</h1>
+        <div class="date-container" id="currentDate">March 12, 2025</div>
+    </div>
+    
+    <div class="grid-container">
+        <!-- Bitcoin Stats -->
+        <div class="section">
+        <h2 class="section-title">Statistiche Bitcoin</h2>
+        <div class="btc-stats">
+            <div class="btc-logo"></div>
+            <div class="btc-price-container">
+            <div class="btc-price" id="btcPrice">$68,245.32</div>
+            <div class="btc-change positive" id="btcChange">+2.34%</div>
+            </div>
+        </div>
+        <div class="etf-flow">
+            <div class="etf-title">Flussi ETF (24 Ore)</div>
+            <div class="etf-value" id="etfFlow">+$234.5M</div>
+        </div>
+        </div>
+        
+        <!-- Market Stats -->
+        <div class="section">
+        <h2 class="section-title">Statistiche di Mercato</h2>
+        <div class="market-stats-container">
+            <div class="coinex-stats">
+            <div class="section-title" style="font-size: 22px; margin-bottom: 10px;">Elencati su CoinEx</div>
+            <div class="listed-coins" id="listedCoins">1,300</div>
+            
+            <div class="coins-status">
+                <div>
+                <div class="up-down-container">
+                    <span class="status-label">In Rialzo</span>
+                    <span class="status-value" id="coinsUp">900</span>
+                </div>
+                <div class="bar-container">
+                    <div class="bar up" id="upBar" style="width: 69%"></div>
+                </div>
+                </div>
+                
+                <div>
+                <div class="up-down-container">
+                    <span class="status-label">In Ribasso</span>
+                    <span class="status-value" id="coinsDown">400</span>
+                </div>
+                <div class="bar-container">
+                    <div class="bar down" id="downBar" style="width: 31%"></div>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <div class="fear-greed">
+            <div class="section-title" style="font-size: 22px; margin-bottom: 0px;">Indice Paura e Avidità</div>
+            <div class="fear-value" id="fearValue">45</div>
+            <div class="fear-label" id="fearLabel">Neutro</div>
+            
+            <div class="meter-container">
+                <div class="meter">
+                <div class="meter-bg"></div>
+                <div class="meter-needle" id="fearNeedle" style="transform: translateX(-50%) rotate(0deg)"></div>
+                </div>
+                <div class="meter-labels">
+                <span>Paura Estrema</span>
+                <span>Avidità Estrema</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Token Stats -->
+        <div class="section">
+        <div class="tokens-container">
+            <div class="tokens-subsection">
+            <div class="tokens-subsection-title">Token Principali</div>
+            <div class="major-tokens">
+                <div class="token-card">
+                <div class="token-symbol">ETH</div>
+                <div class="token-change negative" id="ethChange">-1.80%</div>
+                <div class="token-price" id="ethPrice">$1,896.50</div>
+                <div class="token-icon eth"></div>
+                </div>
+                
+                <div class="token-card">
+                <div class="token-symbol">SOL</div>
+                <div class="token-change negative" id="solChange">-5.10%</div>
+                <div class="token-price" id="solPrice">$128.20</div>
+                <div class="token-icon sol"></div>
+                </div>
+            </div>
+            </div>
+            
+            <div class="tokens-subsection">
+            <div class="tokens-subsection-title">Token da Tenere d'Occhio</div>
+            <div class="tokens-to-watch">
+                <div class="token-card" id="token1Card">
+                <div class="token-symbol" id="token1Symbol">SUI</div>
+                <div class="token-change positive" id="token1Change">+5.20%</div>
+                <div class="token-price" id="token1Price">$1.85</div>
+                <div class="token-icon">Meme</div>
+                </div>
+                
+                <div class="token-card" id="token2Card">
+                <div class="token-symbol" id="token2Symbol">HYPE</div>
+                <div class="token-change negative" id="token2Change">-2.10%</div>
+                <div class="token-price" id="token2Price">$4.78</div>
+                <div class="token-icon">Meme</div>
+                </div>
+                
+                <div class="token-card" id="token3Card">
+                <div class="token-symbol" id="token3Symbol">SHELL</div>
+                <div class="token-change positive" id="token3Change">+8.45%</div>
+                <div class="token-price" id="token3Price">$0.43</div>
+                <div class="token-icon">Meme</div>
+                </div>
+                
+                <div class="token-card" id="token4Card">
+                <div class="token-symbol" id="token4Symbol">ONDO</div>
+                <div class="token-change negative" id="token4Change">-1.32%</div>
+                <div class="token-price" id="token4Price">$1.27</div>
+                <div class="token-icon">Meme</div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Daily Focus -->
+        <div class="section">
+        <h2 class="section-title">Focus Giornaliero</h2>
+        <div class="news-container" id="newsContainer">
+            <div class="news-item">
+            <div class="news-bullet"></div>
+            <div class="news-text">DOGE prototype Shiba Inu, Kabosu's owner, launched the $Cocoro token on Base, but after reaching a $100M market cap, the price plunged by 70%.</div>
+            </div>
+            
+            <div class="news-item">
+            <div class="news-bullet"></div>
+            <div class="news-text">Texas Senate passed a bill for a Bitcoin reserve fund.</div>
+            </div>
+            
+            <div class="news-item">
+            <div class="news-bullet"></div>
+            <div class="news-text">AI sector's market cap dropped 5.6% in 24 hours.</div>
+            </div>
+            
+            <div class="news-item">
+            <div class="news-bullet"></div>
+            <div class="news-text">Bubblemap's TGE for $BMT is set for March 11.</div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Control Panel -->
+    <button class="toggle-controls" id="toggleControls">Edit Data</button>
+
+    <div class="controls" id="controls">
+    <div class="control-title">Update Poster Data</div>
+    
+    <div class="control-group">
+        <div class="control-label">Date</div>
+        <input type="text" id="dateInput" placeholder="March 12, 2025">
+    </div>
+    
+    <div class="control-group">
+        <div class="control-label">ETF Flow (24h)</div>
+        <input type="text" id="etfFlowInput" placeholder="+$234.5M">
+    </div>
+    
+    <div class="control-group">
+        <div class="control-label">CoinEx Listed Coins</div>
+        <input type="number" id="listedCoinsInput" placeholder="1300">
+        
+        <div class="control-label">Coins Up</div>
+        <input type="number" id="coinsUpInput" placeholder="900">
+        
+        <div class="control-label">Coins Down</div>
+        <input type="number" id="coinsDownInput" placeholder="400">
+    </div>
+    
+    <div class="control-group">
+        <div class="control-label">Tokens to Watch (CoinGecko IDs)</div>
+        
+        <div class="token-input-group">
+        <input type="text" id="token1Input" placeholder="sui" value="sui">
+        <input type="text" id="token1SymbolInput" placeholder="SUI" value="SUI">
+        <input type="text" id="token1CategoryInput" placeholder="Category" value="Meme">
+        </div>
+        
+        <div class="token-input-group">
+        <input type="text" id="token2Input" placeholder="hyperliquid" value="hyperliquid">
+        <input type="text" id="token2SymbolInput" placeholder="HYPE" value="HYPE">
+        <input type="text" id="token2CategoryInput" placeholder="Category" value="Meme">
+        </div>
+        
+        <div class="token-input-group">
+        <input type="text" id="token3Input" placeholder="myshell" value="myshell">
+        <input type="text" id="token3SymbolInput" placeholder="SHELL" value="SHELL">
+        <input type="text" id="token3CategoryInput" placeholder="Category" value="Meme">
+        </div>
+        
+        <div class="token-input-group">
+        <input type="text" id="token4Input" placeholder="ondo-finance" value="ondo-finance">
+        <input type="text" id="token4SymbolInput" placeholder="ONDO" value="ONDO">
+        <input type="text" id="token4CategoryInput" placeholder="Category" value="Meme">
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="control-label">News Items (One per line)</div>
+        <textarea id="newsInput" rows="6" placeholder="News item 1&#10;News item 2&#10;News item 3&#10;News item 4"></textarea>
+    </div>
+    
+    <button id="updateManualData">Update Manual Data</button>
+    <button id="fetchApiData">Fetch API Data</button>
+    <button id="downloadPoster">Download Poster</button>
+    
+    <div class="control-hint">
+        - Click "Update Manual Data" after changing information<br>
+        - Use "Fetch API Data" to get latest prices and Fear & Greed Index<br>
+        - For tokens, enter CoinGecko IDs and your preferred display symbols
+    </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
