@@ -27,7 +27,7 @@ body {
 .poster-container {
   width: 1080px;
   height: 1080px;
-  background: url(krbackground.png');
+  background: url('krbackground.png');
   background-size: cover;
   background-position: center;
   position: relative;
