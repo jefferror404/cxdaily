@@ -191,23 +191,20 @@ async function fetchCoinExData(retryCount = 0, delayMs = 1000) {
 
 // Helper function to format small token prices
 function formatSmallTokenPrice(price) {
-    if (price < 0.01) {
-        // Convert the price to a string to count leading zeros
-        const priceStr = price.toFixed(8); // Ensure enough decimal places
-        const [integerPart, decimalPart] = priceStr.split('.');
-
-        // Find the number of leading zeros after the decimal point
-        const leadingZeros = decimalPart.match(/^0+/)?.[0]?.length || 0;
-
-        // Extract the significant digits (non-zero part)
-        const significantDigits = decimalPart.slice(leadingZeros, leadingZeros + 4); // Show up to 4 significant digits
-
-        // Format the price with superscript for leading zeros
-        return `$0.0<sup>${leadingZeros}</sup>${significantDigits}`;
-    } else {
-        // For prices >= 0.01, use standard formatting
-        return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
+  if (price < 0.0001) {
+      // For very small prices, keep the superscript notation
+      const priceStr = price.toFixed(8);
+      const [integerPart, decimalPart] = priceStr.split('.');
+      const leadingZeros = decimalPart.match(/^0+/)?.[0]?.length || 0;
+      const significantDigits = decimalPart.slice(leadingZeros, leadingZeros + 4);
+      return `$0.0<sup>${leadingZeros}</sup>${significantDigits}`;
+  } else if (price < 1) {
+      // For prices between 0.0001 and 1, show 4 decimal places
+      return `$${price.toFixed(4)}`;
+  } else {
+      // For prices >= 1, show 2 decimal places
+      return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
 }
 
 // Fetch all token data in a single API call
